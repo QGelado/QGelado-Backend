@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import sorvetePadraoModel from "../models/sorvetePadrao.js";
+import fs from "fs"
 
 class SorvetePadraoController {
     static async buscaSorvetes(req, res) {
@@ -47,13 +48,14 @@ class SorvetePadraoController {
     static async cadastraSorvete(req, res) {
         try {
             
-            const { nome, marca, preco, sabor, quantidade, status, descricao, imagem  } = req.body
+            const { nome, marca, preco, sabor, quantidade, status, descricao  } = req.body
+            const file = req.file
             
-            if( !nome || !marca || !preco || !sabor || !quantidade || !status || !descricao || !imagem){
+            if( !nome || !marca || !preco || !sabor || !quantidade || !status || !descricao || !file){
                 res.status(400).send({message: "Preencha todos os dados!"})
             } else {
-
-                const dadosSorvete = req.body
+                
+                const dadosSorvete = {...req.body, imagem: file.path}
                 const sorveteCadastrado = await sorvetePadraoModel.create(dadosSorvete);
 
                 res.status(201).json({message: "Sorvete padrão foi cadastrado com sucesso!", data: sorveteCadastrado})
@@ -69,26 +71,36 @@ class SorvetePadraoController {
     static async atualizaSorvete(req, res) {
         try {
 
-            const { nome, marca, preco, sabor, quantidade, status, descricao, imagem  } = req.body
+            const { nome, marca, preco, sabor, quantidade, status, descricao } = req.body
+            const file = req.file
             const id = req.params.id
 
             if(!mongoose.Types.ObjectId.isValid(id)){
                 res.status(400).send({message: "Id inválido"})
             } else {
                 
-                if( !nome || !marca || !preco || !sabor || !quantidade || !status || !descricao || !imagem){
-                    res.status(400).send({message: "Preencha todos os dados!"})
+                if( !nome && !marca && !preco && !sabor && !quantidade && !status && !descricao){
+                    res.status(400).send({message: "Preencha um campo para a atualização!"})
                 } else {
                     
-                    const dadosSorvete = req.body
-                    const sorveteExiste = await sorvetePadraoModel.findById(id);
+                    const sorveteExistente = await sorvetePadraoModel.findById(id);
 
-                    if(!sorveteExiste){
+                    if(!sorveteExistente){
                         res.status(404).send({message: "Sorvete não encontrado"})
                     } else {
 
-                        const sorveteAtualizado = await sorvetePadraoModel.findByIdAndUpdate(id, dadosSorvete);
-                        res.status(201).json({message: "Sorvete padrão foi atualizado com sucesso!", data: sorveteAtualizado})
+                        if(file){
+                            if(fs.existsSync(sorveteExistente.imagem)){
+                                fs.unlinkSync(sorveteExistente.imagem);
+                            }
+                            sorveteExistente.imagem = file.path;
+                        }
+
+                        await sorveteExistente.updateOne({
+                            nome, marca, preco, sabor, quantidade, status, descricao,
+                            imagem: sorveteExistente.imagem
+                        });
+                        res.status(201).json({message: "Sorvete padrão foi atualizado com sucesso!", data: sorveteExistente});
 
                     }
     
@@ -116,8 +128,14 @@ class SorvetePadraoController {
                 if(!resSorvete){
                     res.status(404).send({message: "Sorvete não encontrado"})
                 }else{
+
+                    if(fs.existsSync(resSorvete.imagem)){
+                        fs.unlinkSync(resSorvete.imagem)
+                    }
+
                     await sorvetePadraoModel.findByIdAndDelete(id)
                     res.status(200).json({message: "Sorvete deletado com sucesso!"})
+                    
                 }
 
             }
