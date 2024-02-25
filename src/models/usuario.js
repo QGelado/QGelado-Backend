@@ -9,6 +9,6 @@ const usuarioSchema = new mongoose.Schema({
     telefone: { type: mongoose.Schema.Types.String }
 }, { versionKey: false });
 
-const usuarioModel = mongoose.model("Usuarios", usuarioSchema);
+const usuarioModel = mongoose.model("usuarios", usuarioSchema);
 
 export { usuarioModel, usuarioSchema }
