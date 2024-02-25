@@ -1,5 +1,6 @@
 import "dotenv/config"
 import express from "express"
+import cors from "cors"
 import connectDatabase from "./src/config/database.js"
 import routes from "./src/routes/index.js"
 
@@ -16,6 +17,8 @@ connection.once("open", () => {
 const app = express();
 
 routes(app);
+
+app.use(cors())
 
 const port = 3000;
 
