@@ -2,6 +2,8 @@ import "dotenv/config"
 import express from "express"
 import connectDatabase from "./src/config/database.js"
 import routes from "./src/routes/index.js"
+import manipulaErros from "./src/middleware/middlewareErros.js";
+import manipula404 from "./src/middleware/middleware404.js";
 
 const connection = await connectDatabase();
 
@@ -18,5 +20,9 @@ const app = express();
 routes(app);
 
 const port = 3000;
+
+// Caso tenha um erro nos controllers, execute essas funções
+app.use(manipula404);
+app.use(manipulaErros);
 
 app.listen(port, () => console.log("Servidor online em http://localhost:3000/"))

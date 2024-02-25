@@ -1,56 +1,76 @@
+import NotFoundError from "../erros/NotFoundError.js";
 import { usuarioModel } from "../models/usuario.js";
 
 class UsuarioController {
 
-    static async buscaTodosOsUsuario(req, res){
+    static async buscaTodosOsUsuario(req, res, next) {
         try {
             const resultadoBusca = await usuarioModel.find({});
             res.status(200).json(resultadoBusca);
         } catch (error) {
-            res.status(500).json({message: `Falha na requisição ${error.message}`});
+            next(error);
         }
     }
 
 
-    static async buscaUmUsuarioPorId(req, res) {
+    static async buscaUmUsuarioPorId(req, res, next) {
         try {
             const idUsuario = req.params.id;
             const resultadoBusca = await usuarioModel.findById(idUsuario);
-            res.status(200).json(resultadoBusca);
+
+            if (resultadoBusca !== null) {
+                res.status(200).json(resultadoBusca);
+            } else {
+                next(new NotFoundError("ID do usuário não encontrado"));
+            }
         } catch (error) {
-            res.status(500).json({ message: `Falha na requisição ${error.message}` });
+            next(error);
         }
     }
 
-    static async criaUmNovoUsuario(req, res) {
+
+    static async criaUmNovoUsuario(req, res, next) {
         try {
             const dadosRequisicao = req.body;
             const resultadoCriacao = await usuarioModel.create(dadosRequisicao);
             res.status(201).json({ message: "Usuário Cadastrado com sucesso!", data: resultadoCriacao });
         } catch (error) {
-            res.status(500).json({ message: `Falha na requisição ${error.message}` });
+            next(error);
         }
     }
 
-    static async atualizarUsuario(req, res){
+
+    static async atualizarUsuario(req, res, next) {
         try {
             const idUsuario = req.params.id;
             const dadosRequisicao = req.body;
-            await usuarioModel.findByIdAndUpdate(idUsuario, dadosRequisicao);
-            const resultadoAtualizacao = await usuarioModel.findById(idUsuario);
-            res.status(200).json({message: "Dados do usuário atualizados!", data: resultadoAtualizacao});
+            const respostId = await usuarioModel.findByIdAndUpdate(idUsuario, dadosRequisicao);
+
+            if (respostId !== null) {
+                const resultadoAtualizacao = await usuarioModel.findById(idUsuario);
+                res.status(200).json({ message: "Dados do usuário atualizados!", data: resultadoAtualizacao });
+            } else {
+                next(new NotFoundError("ID do usuário não encontrado"));
+            }
+
         } catch (error) {
-            res.status(500).json({message: `Falha na requisição ${error.message}`});
+            next(error);
         }
     }
 
-    static async deletaUsuario(req, res){
+
+    static async deletaUsuario(req, res, next) {
         try {
             const idUsuario = req.params.id;
-            await usuarioModel.findByIdAndDelete(idUsuario);
-            res.status(200).json({message: "Usuário deletado com sucesso!"});
+            const respostId = await usuarioModel.findByIdAndDelete(idUsuario);
+
+            if (respostId !== null) {
+                res.status(200).json({ message: "Usuário deletado com sucesso!" });
+            } else {
+                next(new NotFoundError("ID do usuário não encontrado"));
+            }
         } catch (error) {
-            res.status(500).json({message: `Falha na requisição ${error.message}`});
+            next(error);
         }
     }
 
