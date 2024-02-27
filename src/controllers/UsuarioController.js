@@ -1,5 +1,5 @@
 import NotFoundError from "../erros/NotFoundError.js";
-import { usuarioModel } from "../models/usuario.js";
+import { usuarioModel } from "../models/index.js";
 
 class UsuarioController {
 
