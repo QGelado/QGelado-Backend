@@ -11,6 +11,6 @@ const sorvetePadraoSchema = new mongoose.Schema({
     imagem: { type: String, require: true },
 })
 
-const sorvetePadraoModel = mongoose.model("Sorvete Padrão", sorvetePadraoSchema, "Sorvete Padrão")
+const sorvetePadraoModel = mongoose.model("sorvetes padrões", sorvetePadraoSchema)
 
 export default sorvetePadraoModel;
