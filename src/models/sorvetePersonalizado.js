@@ -10,6 +10,6 @@ const sorvetePersonalizadoSchema = new mongoose.Schema({
     descricao: { type: String, require: true },
 })
 
-const sorvetePersonalizadoModel = mongoose.model("Sorvete Personalizado", sorvetePersonalizadoSchema, "Sorvete Personalizado")
+const sorvetePersonalizadoModel = mongoose.model("sorvetes personalizados", sorvetePersonalizadoSchema)
 
 export default sorvetePersonalizadoModel;
