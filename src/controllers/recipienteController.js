@@ -67,12 +67,12 @@ class recipienteController{
             res.status(500).send({ message: "Ocorreu um erro ao cadastrar o recipiente" });
         }
     }
-    /*
+    
 
-    static async atualizaSaborSorvete(req, res) {
+    static async atualizaRecipiente(req, res) {
         try {
 
-            const { nome, sabor, quantidade, imagem } = req.body
+            const { nome, tipo, quantidade, imagem } = req.body
             const file = req.file
             const id = req.params.id
 
@@ -80,28 +80,28 @@ class recipienteController{
                 res.status(400).send({message: "Id inválido"})
             } else {
                 
-                if( !nome && !sabor && !quantidade && !file  ){
+                if( !nome && !tipo && !quantidade && !file  ){
                     res.status(400).send({message: "Preencha um campo para a atualização!"})
                 } else {
                     
-                    const saborExistente = await saborSorveteModel.findById(id);
+                    const recipienteExistente = await recipienteModel.findById(id);
 
-                    if(!saborExistente){
-                        res.status(404).send({message: "Sabor não encontrado"})
+                    if(!recipienteExistente){
+                        res.status(404).send({message: "Recipiente não encontrado"})
                     } else {
 
                         if(file){
-                            if(fs.existsSync(saborExistente.imagem)){
-                                fs.unlinkSync(saborExistente.imagem);
+                            if(fs.existsSync(recipienteExistente.imagem)){
+                                fs.unlinkSync(recipienteExistente.imagem);
                             }
-                            saborExistente.imagem = file.path;
+                            recipienteExistente.imagem = file.path;
                         }
 
-                        await saborExistente.updateOne({
-                            nome, sabor, quantidade, imagem,
-                            imagem: saborExistente.imagem
+                        await recipienteExistente.updateOne({
+                            nome, tipo, quantidade, imagem,
+                            imagem: recipienteExistente.imagem
                         });
-                        res.status(201).json({message: "O sabor foi atualizado com sucesso!", data: saborExistente});
+                        res.status(201).json({message: "O recipiente foi atualizado com sucesso!", data: recipienteExistente});
 
                     }
     
@@ -115,6 +115,7 @@ class recipienteController{
         }
     }
 
+    /*
     static async deletaSaborSorvete(req, res) {
         try {
 
