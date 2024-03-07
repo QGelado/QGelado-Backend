@@ -44,29 +44,30 @@ class recipienteController{
         }
     }
 
-    /*
-    static async cadastraSaborSorvete(req, res) {
+    
+    static async cadastraRecipiente(req, res) {
         try {
             
-            const { nome, sabor, quantidade, imagem  } = req.body
+            const { nome, tipo, quantidade, imagem  } = req.body
             const file = req.file
             
-            if( !nome || !sabor || !quantidade || !file){
+            if( !nome || !tipo || !quantidade || !file){
                 res.status(400).send({message: "Preencha todos os dados!"})
             } else {
                 
-                const dadosSaborSorvete = {...req.body, imagem: file.path}
-                const saborCadastrado = await saborSorveteModel.create(dadosSaborSorvete);
+                const dadosRecipiente = {...req.body, imagem: file.path}
+                const recipienteCadastrado = await recipienteModel.create(dadosRecipiente);
 
-                res.status(201).json({message: "O sabor foi cadastrado com sucesso!", data: saborCadastrado})
+                res.status(201).json({message: "O recipiente foi cadastrado com sucesso!", data: recipienteCadastrado})
 
             }
 
         } catch(error) {
             console.log(error)
-            res.status(500).send({ message: "Ocorreu um erro ao cadastrar o sabor" });
+            res.status(500).send({ message: "Ocorreu um erro ao cadastrar o recipiente" });
         }
     }
+    /*
 
     static async atualizaSaborSorvete(req, res) {
         try {

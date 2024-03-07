@@ -6,5 +6,6 @@ const routesRecipiente = express.Router()
 
 routesRecipiente.get("/recipiente", recipienteController.buscaRecipiente)
 routesRecipiente.get("/recipiente/:id", recipienteController.buscaRecipiente)
+routesRecipiente.post("/recipiente", upload('recipiente').single('file'), recipienteController.cadastraRecipiente)
 
 export default routesRecipiente;
