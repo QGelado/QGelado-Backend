@@ -69,8 +69,8 @@ class acompanhamentoController{
         }
     }
     
-    /*
-    static async atualizaRecipiente(req, res) {
+    
+    static async atualizaAcompanhamento(req, res) {
         try {
 
             const { nome, tipo, quantidade, imagem } = req.body
@@ -85,24 +85,24 @@ class acompanhamentoController{
                     res.status(400).send({message: "Preencha um campo para a atualização!"})
                 } else {
                     
-                    const recipienteExistente = await recipienteModel.findById(id);
+                    const acompanhamentoExistente = await acompanhamentoModel.findById(id);
 
-                    if(!recipienteExistente){
-                        res.status(404).send({message: "Recipiente não encontrado"})
+                    if(!acompanhamentoExistente){
+                        res.status(404).send({message: "Acompanhamento não encontrado"})
                     } else {
 
                         if(file){
-                            if(fs.existsSync(recipienteExistente.imagem)){
-                                fs.unlinkSync(recipienteExistente.imagem);
+                            if(fs.existsSync(acompanhamentoExistente.imagem)){
+                                fs.unlinkSync(acompanhamentoExistente.imagem);
                             }
-                            recipienteExistente.imagem = file.path;
+                            acompanhamentoExistente.imagem = file.path;
                         }
 
-                        await recipienteExistente.updateOne({
+                        await acompanhamentoExistente.updateOne({
                             nome, tipo, quantidade, imagem,
-                            imagem: recipienteExistente.imagem
+                            imagem: acompanhamentoExistente.imagem
                         });
-                        res.status(201).json({message: "O recipiente foi atualizado com sucesso!", data: recipienteExistente});
+                        res.status(201).json({message: "O acompanhamento foi atualizado com sucesso!", data: acompanhamentoExistente});
 
                     }
     
@@ -112,10 +112,11 @@ class acompanhamentoController{
 
         } catch(error) {
             console.log(error)
-            res.status(500).send({ message: "Ocorreu um erro ao atualizar o sabor" });
+            res.status(500).send({ message: "Ocorreu um erro ao atualizar o acompanhamento" });
         }
     }
 
+    /*
     static async deletaRecipiente(req, res) {
         try {
 
