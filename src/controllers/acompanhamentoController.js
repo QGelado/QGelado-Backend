@@ -1,24 +1,25 @@
 import mongoose from 'mongoose';
-import recipienteModel  from '../models/recipiente.js';
+import acompanhamentoModel  from '../models/acompanhamento.js';
 import fs from "fs";
 
-class recipienteController{
+class acompanhamentoController{
 
-    static async buscaRecipiente(req, res) {
+    static async buscaAcompanhamento(req, res) {
         try{
-            const recipientes = await recipienteModel.find();
-            if(recipientes.length === 0){
-                res.status(404).send({message: "Recipiente não disponivel"})
+            const resAcompanhamentos = await acompanhamentoModel.find();
+            if(resAcompanhamentos.length === 0){
+                res.status(404).send({message: "Acompanhamento não disponivel"})
             }else{
-                res.status(200).json(recipientes)
+                res.status(200).json(resAcompanhamentos)
             }
         }catch(erro){
             console.error(erro)
-            res.status(500).json({message:"Ocorreu um erro ao buscar o recipiente"})
+            res.status(500).json({message:"Ocorreu um erro ao buscar o acompanhamento"})
         }
 
     }
 
+    /*
     static async buscaRecipiente(req, res) {
         try {
 
@@ -146,8 +147,8 @@ class recipienteController{
             res.status(500).send({ message: "Ocorreu um erro ao deletar o recipiente" });
         }
     }
-
+    */
 
 }
 
-export default recipienteController;
+export default acompanhamentoController;

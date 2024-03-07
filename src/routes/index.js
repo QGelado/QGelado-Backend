@@ -1,8 +1,8 @@
 import express from "express";
-import routesRecipiente from "./routesRecipiente.js";
+import routesAcompanhamento from "./routesAcompanhamento.js";
 
 const routes = app => {
-    app.use(express.json(), routesRecipiente);
+    app.use(express.json(), routesAcompanhamento);
 }
 
 export default routes;

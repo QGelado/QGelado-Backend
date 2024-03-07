@@ -1,13 +1,15 @@
 import express from "express"
-import recipienteController from "../controllers/recipienteController.js"
+import acompanhamentoController from "../controllers/acompanhamentoController.js"
 import upload from "../config/multer.js"
 
-const routesRecipiente = express.Router()
+const routesAcompanhamento = express.Router()
 
-routesRecipiente.get("/recipiente", recipienteController.buscaRecipiente)
+routesAcompanhamento.get("/acompanhamento", acompanhamentoController.buscaAcompanhamento)
+/*
 routesRecipiente.get("/recipiente/:id", recipienteController.buscaRecipiente)
 routesRecipiente.post("/recipiente", upload('recipiente').single('file'), recipienteController.cadastraRecipiente)
 routesRecipiente.put("/recipiente/:id", upload('recipiente').single('file'), recipienteController.atualizaRecipiente)
 routesRecipiente.delete("/recipiente/:id", recipienteController.deletaRecipiente)
+*/
 
-export default routesRecipiente;
+export default routesAcompanhamento;
