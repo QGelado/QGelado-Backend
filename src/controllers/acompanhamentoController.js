@@ -19,8 +19,8 @@ class acompanhamentoController{
 
     }
 
-    /*
-    static async buscaRecipiente(req, res) {
+    
+    static async buscaAcompanhamento(req, res) {
         try {
 
             const id = req.params.id;
@@ -29,23 +29,23 @@ class acompanhamentoController{
                 res.status(400).send({message: "Id inválido"})
             } else {
                 
-                const resRecipiente = await recipienteModel.findById(id);
+                const resAcompanhamento = await acompanhamentoModel.findById(id);
     
-                if(!resRecipiente){
-                    res.status(404).send({message: "Recipiente não encontrado"})
+                if(!resAcompanhamento){
+                    res.status(404).send({message: "Acompanhamento não encontrado"})
                 }else{
-                    res.status(200).json(resRecipiente)
+                    res.status(200).json(resAcompanhamento)
                 }
 
             }
 
         } catch(error) {
             console.log(error)
-            res.status(500).send({ message: "Ocorreu um erro ao buscar o recipiente" });
+            res.status(500).send({ message: "Ocorreu um erro ao buscar o acompanhamento" });
         }
     }
 
-    
+    /*
     static async cadastraRecipiente(req, res) {
         try {
             
