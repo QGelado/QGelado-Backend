@@ -115,8 +115,7 @@ class recipienteController{
         }
     }
 
-    /*
-    static async deletaSaborSorvete(req, res) {
+    static async deletaRecipiente(req, res) {
         try {
 
             const id = req.params.id;
@@ -125,18 +124,18 @@ class recipienteController{
                 res.status(400).send({message: "Id inválido"})
             } else {
                 
-                const resSabor = await saborSorveteModel.findById(id);
+                const resRecipiente = await recipienteModel.findById(id);
     
-                if(!resSabor){
-                    res.status(404).send({message: "Sabor não encontrado"})
+                if(!resRecipiente){
+                    res.status(404).send({message: "Recipiente não encontrado"})
                 }else{
 
-                    if(fs.existsSync(resSabor.imagem)){
-                        fs.unlinkSync(resSabor.imagem)
+                    if(fs.existsSync(resRecipiente.imagem)){
+                        fs.unlinkSync(resRecipiente.imagem)
                     }
 
-                    await saborSorveteModel.findByIdAndDelete(id)
-                    res.status(200).json({message: "Sabor deletado com sucesso!"})
+                    await recipienteModel.findByIdAndDelete(id)
+                    res.status(200).json({message: "Recipiente deletado com sucesso!"})
                     
                 }
 
@@ -144,10 +143,9 @@ class recipienteController{
 
         } catch(error) {
             console.log(error)
-            res.status(500).send({ message: "Ocorreu um erro ao deletar o sabor" });
+            res.status(500).send({ message: "Ocorreu um erro ao deletar o recipiente" });
         }
     }
-    */
 
 
 }
