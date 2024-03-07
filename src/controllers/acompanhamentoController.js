@@ -45,8 +45,8 @@ class acompanhamentoController{
         }
     }
 
-    /*
-    static async cadastraRecipiente(req, res) {
+    
+    static async cadastraAcompanhamento(req, res) {
         try {
             
             const { nome, tipo, quantidade, imagem  } = req.body
@@ -56,20 +56,20 @@ class acompanhamentoController{
                 res.status(400).send({message: "Preencha todos os dados!"})
             } else {
                 
-                const dadosRecipiente = {...req.body, imagem: file.path}
-                const recipienteCadastrado = await recipienteModel.create(dadosRecipiente);
+                const dadosAcompanhamento = {...req.body, imagem: file.path}
+                const acompanhamentoCadastrado = await acompanhamentoModel.create(dadosAcompanhamento);
 
-                res.status(201).json({message: "O recipiente foi cadastrado com sucesso!", data: recipienteCadastrado})
+                res.status(201).json({message: "O acompanhamento foi cadastrado com sucesso!", data: acompanhamentoCadastrado})
 
             }
 
         } catch(error) {
             console.log(error)
-            res.status(500).send({ message: "Ocorreu um erro ao cadastrar o recipiente" });
+            res.status(500).send({ message: "Ocorreu um erro ao cadastrar o acompanhamento" });
         }
     }
     
-
+    /*
     static async atualizaRecipiente(req, res) {
         try {
 

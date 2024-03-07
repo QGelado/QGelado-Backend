@@ -6,8 +6,8 @@ const routesAcompanhamento = express.Router()
 
 routesAcompanhamento.get("/acompanhamento", acompanhamentoController.buscaAcompanhamento)
 routesAcompanhamento.get("/acompanhamento/:id", acompanhamentoController.buscaAcompanhamento)
+routesAcompanhamento.post("/acompanhamento", upload('acompanhamento').single('file'), acompanhamentoController.cadastraAcompanhamento)
 /*
-routesRecipiente.post("/recipiente", upload('recipiente').single('file'), recipienteController.cadastraRecipiente)
 routesRecipiente.put("/recipiente/:id", upload('recipiente').single('file'), recipienteController.atualizaRecipiente)
 routesRecipiente.delete("/recipiente/:id", recipienteController.deletaRecipiente)
 */
