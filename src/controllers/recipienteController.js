@@ -19,6 +19,31 @@ class recipienteController{
 
     }
 
+    static async buscaRecipiente(req, res) {
+        try {
+
+            const id = req.params.id;
+            
+            if(!mongoose.Types.ObjectId.isValid(id)){
+                res.status(400).send({message: "Id inválido"})
+            } else {
+                
+                const resRecipiente = await recipienteModel.findById(id);
+    
+                if(!resRecipiente){
+                    res.status(404).send({message: "Recipiente não encontrado"})
+                }else{
+                    res.status(200).json(resRecipiente)
+                }
+
+            }
+
+        } catch(error) {
+            console.log(error)
+            res.status(500).send({ message: "Ocorreu um erro ao buscar o recipiente" });
+        }
+    }
+
     /*
     static async cadastraSaborSorvete(req, res) {
         try {
