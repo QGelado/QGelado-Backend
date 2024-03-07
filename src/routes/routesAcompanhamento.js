@@ -8,8 +8,6 @@ routesAcompanhamento.get("/acompanhamento", acompanhamentoController.buscaAcompa
 routesAcompanhamento.get("/acompanhamento/:id", acompanhamentoController.buscaAcompanhamento)
 routesAcompanhamento.post("/acompanhamento", upload('acompanhamento').single('file'), acompanhamentoController.cadastraAcompanhamento)
 routesAcompanhamento.put("/acompanhamento/:id", upload('acompanhamento').single('file'), acompanhamentoController.atualizaAcompanhamento)
-/*
-routesRecipiente.delete("/recipiente/:id", recipienteController.deletaRecipiente)
-*/
+routesAcompanhamento.delete("/acompanhamento/:id", acompanhamentoController.deletaAcompanhamento)
 
 export default routesAcompanhamento;

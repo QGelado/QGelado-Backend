@@ -116,8 +116,8 @@ class acompanhamentoController{
         }
     }
 
-    /*
-    static async deletaRecipiente(req, res) {
+    
+    static async deletaAcompanhamento(req, res) {
         try {
 
             const id = req.params.id;
@@ -126,18 +126,18 @@ class acompanhamentoController{
                 res.status(400).send({message: "Id inválido"})
             } else {
                 
-                const resRecipiente = await recipienteModel.findById(id);
+                const resAcompanhamento = await acompanhamentoModel.findById(id);
     
-                if(!resRecipiente){
-                    res.status(404).send({message: "Recipiente não encontrado"})
+                if(!resAcompanhamento){
+                    res.status(404).send({message: "Acompanhamento não encontrado"})
                 }else{
 
-                    if(fs.existsSync(resRecipiente.imagem)){
-                        fs.unlinkSync(resRecipiente.imagem)
+                    if(fs.existsSync(resAcompanhamento.imagem)){
+                        fs.unlinkSync(resAcompanhamento.imagem)
                     }
 
-                    await recipienteModel.findByIdAndDelete(id)
-                    res.status(200).json({message: "Recipiente deletado com sucesso!"})
+                    await acompanhamentoModel.findByIdAndDelete(id)
+                    res.status(200).json({message: "Acompanhamento deletado com sucesso!"})
                     
                 }
 
@@ -145,10 +145,9 @@ class acompanhamentoController{
 
         } catch(error) {
             console.log(error)
-            res.status(500).send({ message: "Ocorreu um erro ao deletar o recipiente" });
+            res.status(500).send({ message: "Ocorreu um erro ao deletar o acompanhamento" });
         }
     }
-    */
 
 }
 
