@@ -1,8 +1,8 @@
 import express from "express";
-import routesSaborSorvete from "./routesSaborSorvete.js";
+import routesRecipiente from "./routesRecipiente.js";
 
 const routes = app => {
-    app.use(express.json(), routesSaborSorvete);
+    app.use(express.json(), routesRecipiente);
 }
 
 export default routes;

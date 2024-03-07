@@ -1,24 +1,25 @@
 import mongoose from 'mongoose';
-import saborSorveteModel  from '../models/sabor-sorvete.js';
+import recipienteModel  from '../models/recipiente.js';
 import fs from "fs";
 
-class saborSorveteController{
+class recipienteController{
 
-    static async buscaSabor(req, res) {
+    static async buscaRecipiente(req, res) {
         try{
-            const saborSorvetes = await saborSorveteModel.find();
-            if(saborSorvetes.length === 0){
-                res.status(404).send({message: "Sabor não disponivel"})
+            const recipientes = await recipienteModel.find();
+            if(recipientes.length === 0){
+                res.status(404).send({message: "Recipiente não disponivel"})
             }else{
-                res.status(200).json(saborSorvetes)
+                res.status(200).json(recipientes)
             }
         }catch(erro){
             console.error(erro)
-            res.status(500).json({message:"Ocorreu um erro ao buscar o sabor"})
+            res.status(500).json({message:"Ocorreu um erro ao buscar o recipiente"})
         }
 
     }
 
+    /*
     static async cadastraSaborSorvete(req, res) {
         try {
             
@@ -119,8 +120,9 @@ class saborSorveteController{
             res.status(500).send({ message: "Ocorreu um erro ao deletar o sabor" });
         }
     }
+    */
 
 
 }
 
-export default saborSorveteController;
+export default recipienteController;
