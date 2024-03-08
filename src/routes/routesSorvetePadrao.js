@@ -9,5 +9,6 @@ routesSorvetePadrao.get("/sorvete-padrao/:id", SorvetePadraoController.buscaSorv
 routesSorvetePadrao.post("/sorvete-padrao", upload('sorvete-padrao').single('file'), SorvetePadraoController.cadastraSorvete)
 routesSorvetePadrao.put("/sorvete-padrao/:id", upload('sorvete-padrao').single('file'), SorvetePadraoController.atualizaSorvete)
 routesSorvetePadrao.delete("/sorvete-padrao/:id", SorvetePadraoController.deletaSorvete)
+routesSorvetePadrao.get("/sorvete-padrao/image/:filename", SorvetePadraoController.buscaImagem)
 
 export default routesSorvetePadrao;
