@@ -20,7 +20,20 @@ class SorvetePadraoController {
             if(resSorvetes.length === 0){
                 res.status(404).send({message: "Não possui sorvetes cadastrados"})
             }else{
-                res.status(200).json(resSorvetes)
+                const sorvetes = resSorvetes.map(sorvete => {
+                    return {
+                        id: sorvete._id,
+                        marca: sorvete.marca,
+                        quantidade: sorvete.quantidade,
+                        status: sorvete.status,
+                        nome: sorvete.nome,
+                        preco: sorvete.preco,
+                        sabor: sorvete.sabor,
+                        descricao: sorvete.descricao,
+                        imagem: `/sorvete-padrao/image/${sorvete.imagem}`,
+                    }
+                })
+                res.status(200).json(sorvetes)
             }
 
         } catch(error) {
@@ -43,7 +56,18 @@ class SorvetePadraoController {
                 if(!resSorvete){
                     res.status(404).send({message: "Sorvete não encontrado"})
                 }else{
-                    res.status(200).json(resSorvete)
+                    const sorvete = {
+                        id: resSorvete._id,
+                        marca: resSorvete.marca,
+                        quantidade: resSorvete.quantidade,
+                        status: resSorvete.status,
+                        nome: resSorvete.nome,
+                        preco: resSorvete.preco,
+                        sabor: resSorvete.sabor,
+                        descricao: resSorvete.descricao,
+                        imagem: `/sorvete-padrao/image/${resSorvete.imagem}`,
+                    }
+                    res.status(200).json(sorvete)
                 }
 
             }
@@ -67,7 +91,19 @@ class SorvetePadraoController {
                 const dadosSorvete = {...req.body, imagem: file.filename}
                 const sorveteCadastrado = await sorvetePadraoModel.create(dadosSorvete);
 
-                res.status(201).json({message: "Sorvete padrão foi cadastrado com sucesso!", data: sorveteCadastrado})
+                const sorveteResposta = {
+                    id: sorveteCadastrado._id,
+                    marca: sorveteCadastrado.marca,
+                    quantidade: sorveteCadastrado.quantidade,
+                    status: sorveteCadastrado.status,
+                    nome: sorveteCadastrado.nome,
+                    preco: sorveteCadastrado.preco,
+                    sabor: sorveteCadastrado.sabor,
+                    descricao: sorveteCadastrado.descricao,
+                    imagem: `/sorvete-padrao/image/${sorveteCadastrado.imagem}`,
+                }
+
+                res.status(201).json({message: "Sorvete padrão foi cadastrado com sucesso!", data: sorveteResposta})
 
             }
 
@@ -112,7 +148,19 @@ class SorvetePadraoController {
                             nome, marca, preco, sabor, quantidade, status, descricao,
                             imagem: sorveteExistente.imagem
                         });
-                        res.status(201).json({message: "Sorvete padrão foi atualizado com sucesso!", data: sorveteExistente});
+                        const sorveteResposta = {
+                            id: sorveteExistente._id,
+                            marca: sorveteExistente.marca,
+                            quantidade: sorveteExistente.quantidade,
+                            status: sorveteExistente.status,
+                            nome: sorveteExistente.nome,
+                            preco: sorveteExistente.preco,
+                            sabor: sorveteExistente.sabor,
+                            descricao: sorveteExistente.descricao,
+                            imagem: `/sorvete-padrao/image/${sorveteExistente.imagem}`,
+                        }
+
+                        res.status(200).json({message: "Sorvete padrão foi atualizado com sucesso!", data: sorveteResposta});
 
                     }
     
