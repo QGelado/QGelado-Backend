@@ -1,4 +1,5 @@
 import NotFoundError from "../erros/NotFoundError.js";
+import AlreadyExist from "../erros/AlreadyExist.js";
 import { usuarioModel } from "../models/index.js";
 
 class UsuarioController {
@@ -32,8 +33,17 @@ class UsuarioController {
     static async criaUmNovoUsuario(req, res, next) {
         try {
             const dadosRequisicao = req.body;
-            const resultadoCriacao = await usuarioModel.create(dadosRequisicao);
-            res.status(201).json({ message: "Usuário Cadastrado com sucesso!", data: resultadoCriacao });
+            const emailRequisicao = dadosRequisicao.email
+
+            const usuarioExiste = await usuarioModel.find({email: emailRequisicao})
+
+            if (usuarioExiste.length === 0) {
+                const resultadoCriacao = await usuarioModel.create(dadosRequisicao);
+                res.status(201).json({ message: "Usuário Cadastrado com sucesso!", data: resultadoCriacao });
+            }else{
+                next(new AlreadyExist());
+            }
+
         } catch (error) {
             next(error);
         }

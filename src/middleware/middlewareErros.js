@@ -3,6 +3,7 @@ import InternalError from "../erros/InternalError.js";
 import CastError from "../erros/CastError.js";
 import NotFoundError from "../erros/NotFoundError.js";
 import ValidationError from "../erros/ValidationError.js";
+import AlreadyExist from "../erros/AlreadyExist.js";
 
 
 export default function manipulaErros(erro, req, res, next) {
@@ -23,7 +24,11 @@ export default function manipulaErros(erro, req, res, next) {
         // Erro não encontrado
         erro.respostaErro(res);
         
-    } else {
+    } else if(erro instanceof AlreadyExist){
+
+        // Usuário já existe ao cadastrar
+        erro.respostaErro(res);
+    }else {
         
         // Erro geral
         new InternalError().respostaErro(res);
