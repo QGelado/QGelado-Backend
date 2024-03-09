@@ -9,5 +9,6 @@ routesSorvetePersonalizado.get("/sorvete-personalizado/:id", sorvetePersonalizad
 routesSorvetePersonalizado.post("/sorvete-personalizado", upload('sorvete-personalizado').single('file'), sorvetePersonalizadoController.cadastraSorvete)
 routesSorvetePersonalizado.put("/sorvete-personalizado/:id", upload('sorvete-personalizado').single('file'), sorvetePersonalizadoController.atualizaSorvete)
 routesSorvetePersonalizado.delete("/sorvete-personalizado/:id", sorvetePersonalizadoController.deletaSorvete)
+routesSorvetePersonalizado.get("/sorvete-personalizado/image/:filename", sorvetePersonalizadoController.buscaImagem)
 
 export default routesSorvetePersonalizado;
