@@ -93,6 +93,33 @@ class UsuarioController {
         }
     }
 
+    static async login(req, res, next){
+        try {
+            const {email, senha} = req.body;
+            
+            const usuarioExiste = await usuarioModel.find({email: email});
+
+            if (usuarioExiste.length === 0) {
+                next(new NotFoundError("Usuário não encontrado"));
+            }else{
+                const comparacaoDeSenhas = await compare(senha, usuarioExiste[0]['senha']);
+                
+                if(!comparacaoDeSenhas){
+                    next(new Unauthorized());
+                }else{
+
+                    // Token tudo 1 dia
+                    const token = sign({_id: usuarioExiste._id, email: usuarioExiste.email}, process.env.JWT_SECRET, {expiresIn: 86400});
+
+                    res.status(200).json({message: "Usuário autenticado com sucesso!", usuarioExiste, token: token});
+                }
+            }
+        
+        } catch (error) {
+            next(error)
+        }
+    }
+
 }
 
 export default UsuarioController;

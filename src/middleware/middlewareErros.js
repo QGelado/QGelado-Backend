@@ -4,6 +4,7 @@ import CastError from "../erros/CastError.js";
 import NotFoundError from "../erros/NotFoundError.js";
 import ValidationError from "../erros/ValidationError.js";
 import AlreadyExist from "../erros/AlreadyExist.js";
+import Unauthorized from "../erros/Unauthorized.js";
 
 
 export default function manipulaErros(erro, req, res, next) {
@@ -28,7 +29,11 @@ export default function manipulaErros(erro, req, res, next) {
 
         // Usuário já existe ao cadastrar
         erro.respostaErro(res);
-    }else {
+    } else if (erro instanceof Unauthorized) {
+
+        // Falha no login
+        erro.respostaErro(res);
+    } else{
         
         // Erro geral
         new InternalError().respostaErro(res);
