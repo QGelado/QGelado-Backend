@@ -12,7 +12,12 @@ class UsuarioController {
     static async buscaTodosOsUsuario(req, res, next) {
         try {
             const resultadoBusca = await usuarioModel.find({});
-            res.status(200).json(resultadoBusca);
+            const resultadoBuscasSemSenhas = resultadoBusca.map(e => { 
+                const objetoAtual = e["_doc"];
+                return {...objetoAtual, senha: undefined}
+            });
+
+            res.status(200).json(resultadoBuscasSemSenhas);
         } catch (error) {
             next(error);
         }
@@ -25,7 +30,11 @@ class UsuarioController {
             const resultadoBusca = await usuarioModel.findById(idUsuario);
 
             if (resultadoBusca !== null) {
-                res.status(200).json(resultadoBusca);
+
+                // Excluir a senha das respostas
+                const resultadoBuscaSemSenha = {...resultadoBusca["_doc"], senha: undefined}
+
+                res.status(200).json(resultadoBuscaSemSenha);
             } else {
                 next(new NotFoundError("ID do usuário não encontrado"));
             }
@@ -47,8 +56,10 @@ class UsuarioController {
                 const senhaHash = await hash(dadosRequisicao.senha, 8);
                 dadosRequisicao = {...dadosRequisicao, senha: senhaHash}
 
+                const token = sign({_id: usuarioExiste._id, email: usuarioExiste.email}, process.env.JWT_SECRET, {expiresIn: 86400});
+
                 const resultadoCriacao = await usuarioModel.create(dadosRequisicao);
-                res.status(201).json({ message: "Usuário Cadastrado com sucesso!", data: resultadoCriacao });
+                res.status(201).json({ message: "Usuário Cadastrado com sucesso!", token: token, data: resultadoCriacao });
             }else{
                 next(new AlreadyExist());
             }

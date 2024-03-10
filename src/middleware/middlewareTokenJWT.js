@@ -1,6 +1,5 @@
 import pkgJson from 'jsonwebtoken';
 const { verify, decode } = pkgJson;
-import InternalError from "../erros/InternalError.js";
 import Unauthorized from "../erros/Unauthorized.js";
 
 export default async function validaToken(req, res, next) {
@@ -8,7 +7,7 @@ export default async function validaToken(req, res, next) {
     const token = req.headers.authorization;
 
     if(!token){
-       return next(new InternalError("Token não informado"))
+       return next(new Unauthorized("Token não informado"))
     }
 
     const [, tokenRequisicao] = token.split(" ");
