@@ -1,6 +1,11 @@
 import NotFoundError from "../erros/NotFoundError.js";
 import AlreadyExist from "../erros/AlreadyExist.js";
+import Unauthorized from "../erros/Unauthorized.js";
 import { usuarioModel } from "../models/index.js";
+import pkg from 'bcryptjs';
+const { hash, compare } = pkg;
+import pkgJson from 'jsonwebtoken';
+const { sign } = pkgJson;
 
 class UsuarioController {
 
@@ -32,12 +37,16 @@ class UsuarioController {
 
     static async criaUmNovoUsuario(req, res, next) {
         try {
-            const dadosRequisicao = req.body;
+            let dadosRequisicao = req.body;
             const emailRequisicao = dadosRequisicao.email
 
-            const usuarioExiste = await usuarioModel.find({email: emailRequisicao})
+            const usuarioExiste = await usuarioModel.find({email: emailRequisicao});
 
             if (usuarioExiste.length === 0) {
+
+                const senhaHash = await hash(dadosRequisicao.senha, 8);
+                dadosRequisicao = {...dadosRequisicao, senha: senhaHash}
+
                 const resultadoCriacao = await usuarioModel.create(dadosRequisicao);
                 res.status(201).json({ message: "Usuário Cadastrado com sucesso!", data: resultadoCriacao });
             }else{
