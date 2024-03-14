@@ -81,16 +81,16 @@ class SorvetePadraoController {
     static async cadastraSorvete(req, res) {
         try {
             
-            const { nome, marca, preco, sabor, quantidade, status, descricao  } = req.body
             const file = req.file
-            
-            if( !nome || !marca || !preco || !sabor || !quantidade || !status || !descricao || !file){
-                res.status(400).send({message: "Preencha todos os dados!"})
-            } else {
-                
+
+            if(!file){
+                console.log(file);
+                res.status(400).send({message: "A imagem é obrigatória para cadastrar um sorvete"})
+            }else {
+
                 const dadosSorvete = {...req.body, imagem: file.filename}
                 const sorveteCadastrado = await sorvetePadraoModel.create(dadosSorvete);
-
+    
                 const sorveteResposta = {
                     id: sorveteCadastrado._id,
                     marca: sorveteCadastrado.marca,
@@ -102,14 +102,15 @@ class SorvetePadraoController {
                     descricao: sorveteCadastrado.descricao,
                     imagem: `/sorvete-padrao/image/${sorveteCadastrado.imagem}`,
                 }
-
+    
                 res.status(201).json({message: "Sorvete padrão foi cadastrado com sucesso!", data: sorveteResposta})
 
             }
+            
 
         } catch(error) {
             console.log(error)
-            res.status(500).send({ message: "Ocorreu um erro ao cadastrar o sorvete" });
+            res.status(500).send({ message: "Ocorreu um erro ao cadastrar o sorvete" , error: error.message});
         }
     }
 
