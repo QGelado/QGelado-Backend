@@ -82,11 +82,10 @@ class sorvetePersonalizadoController{
     static async cadastraSorvete(req, res) {
         try {
 
-            const { nome, preco, sabores, recipiente, acompanhamentos, imagem, descricao } = req.body
             const file = req.file
 
-            if(!nome || !preco || !sabores || !recipiente || !file || !descricao){
-                res.status(400).send({message: "Preencha todos os dados!"})
+            if(!file){
+                res.status(400).send({message: "A imagem é obrigatória para cadastrar um sorvete"})
             } else {
 
                 const dadosSorvete = {...req.body, imagem: file.filename}
@@ -109,7 +108,7 @@ class sorvetePersonalizadoController{
 
         } catch(error) {
             console.log(error)
-            res.status(500).send({ message: "Ocorreu um erro ao cadastrar o sorvete" });
+            res.status(500).send({ message: "Ocorreu um erro ao cadastrar o sorvete", error: error.message });
         }
     }
 
