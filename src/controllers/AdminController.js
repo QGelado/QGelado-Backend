@@ -1,8 +1,15 @@
 import { adminModel } from "../models/admin.js";
 import NotFoundError from "../erros/NotFoundError.js"
+import AlreadyExist from "../erros/AlreadyExist.js"
+import Unauthorized from "../erros/Unauthorized.js"
+import pkg from 'bcryptjs';
+const { hash, compare } = pkg;
+import pkgJson from 'jsonwebtoken';
+const { sign } = pkgJson;
 
 class AdminController{
 
+    // Deletar depois
     static async buscaTodosOsAdmin(req, res, next){
         try {
             const resultadoAdmin = await adminModel.find({});
@@ -31,10 +38,21 @@ class AdminController{
 
     static async criaUmNovoAdmin(req, res, next){
         try {
-            const dadosAdmin = req.body;
-            const retornoAdminCriado = await adminModel.create(dadosAdmin);
+            let dadosAdmin = req.body;
+            const emailRequisicao = dadosAdmin.email;
 
-            res.status(201).json({message: "Admin criado!", data: retornoAdminCriado});
+            const temAdmin = await adminModel.find({email: emailRequisicao});
+
+            if(temAdmin.length === 0){
+                const senhaComHash = await hash(dadosAdmin.senha, 8);
+                dadosAdmin = {...dadosAdmin, senha: senhaComHash};
+
+                const retornoAdminCriado = await adminModel.create(dadosAdmin);
+                res.status(201).json({message: "Admin criado!", data: retornoAdminCriado});
+            }else{
+                next(new AlreadyExist("Admin já cadastrado! Faça Login!"));
+            }
+
         } catch (error) {
             next(error);
         }
@@ -69,6 +87,32 @@ class AdminController{
             } else {
                 next(new NotFoundError("ID do admin não encontrado!"));
             } 
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async login(req, res, next){
+        try {
+            const dadosRequisicao = req.body;
+
+            const temAdmin = await adminModel.find({email: dadosRequisicao.email});
+
+            if (temAdmin.length === 0) {
+                next(new NotFoundError("Admin não encontrado! Faça o cadastro!"));
+            }else{
+                const comparaSenhas = await compare(dadosRequisicao.senha, temAdmin[0]['senha']);
+
+                if (!comparaSenhas) {
+                    next(new Unauthorized());
+                }else{
+                    const token = sign({_id: temAdmin._id, email: temAdmin.email}, process.env.JWT_SECRET, {expiresIn: 86400});
+
+                    res.status(200).json({message: "Admin autenticado com sucesso!", token: token});
+                }
+            }
+
+
         } catch (error) {
             next(error);
         }

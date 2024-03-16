@@ -9,7 +9,7 @@ const adminSchema = new mongoose.Schema({
             const re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{20,}$/;
             return (!value || !value.trim().length) || re.test(value)
         },
-        message: "Sua senha precisa ter pelo menos um dígito, uma letra minuscula e uma maiúscula e no minimo 20 caracteres!"
+        message: "Sua senha precisa ter pelo menos um dígito, uma letra minuscula e maiúscula e no minimo 20 caracteres!"
     }},
 }, {versionKey: false});
 
