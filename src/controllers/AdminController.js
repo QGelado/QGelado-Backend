@@ -9,24 +9,15 @@ const { sign } = pkgJson;
 
 class AdminController{
 
-    // Deletar depois
-    static async buscaTodosOsAdmin(req, res, next){
-        try {
-            const resultadoAdmin = await adminModel.find({});
-
-            res.status(200).json(resultadoAdmin);
-        } catch (error) {
-            next(error);
-        }
-    }
-
     static async buscaUmAdmin(req, res, next){
         try {
             const idAdmin = req.params.id;
             const resultadoAdmin = await adminModel.findById(idAdmin);
-
+            
             if(resultadoAdmin !== null){
-                res.status(200).json(resultadoAdmin);
+                const resultadoAdminSemSenha = {...resultadoAdmin['_doc'], senha: undefined};
+
+                res.status(200).json(resultadoAdminSemSenha);
             }else{
                 next(new NotFoundError("ID do admin não encontrado!"));
             }
@@ -47,8 +38,10 @@ class AdminController{
                 const senhaComHash = await hash(dadosAdmin.senha, 8);
                 dadosAdmin = {...dadosAdmin, senha: senhaComHash};
 
+                const token = sign({_id: temAdmin._id, email: temAdmin.email}, process.env.JWT_SECRET, {expiresIn: 86400});
+
                 const retornoAdminCriado = await adminModel.create(dadosAdmin);
-                res.status(201).json({message: "Admin criado!", data: retornoAdminCriado});
+                res.status(201).json({message: "Admin criado!", data: retornoAdminCriado, token: token});
             }else{
                 next(new AlreadyExist("Admin já cadastrado! Faça Login!"));
             }
