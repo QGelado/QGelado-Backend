@@ -8,9 +8,12 @@ class PedidosController {
 
     static async buscaTodosOsPedidos(req, res, next) {
         try {
-            const listaDePedidos = await pedidosModel.find({});
+            const listaDePedidos = pedidosModel.find();
 
-            res.status(200).json(listaDePedidos);
+            req.resultado = listaDePedidos;
+
+            // Chama o middlewarePaginacao (veja a rota dos pedidos);
+            next();
         } catch (error) {
             next(error);
         }
@@ -25,7 +28,7 @@ class PedidosController {
             if (retornoPedido !== null) {
                 res.status(200).json(retornoPedido);
             } else {
-                next(new NotFoundError("Id do pedido não encontrado!"));                
+                next(new NotFoundError("Id do pedido não encontrado!"));
             }
 
         } catch (error) {
@@ -42,7 +45,7 @@ class PedidosController {
             const codigoPedido = parseInt("9867" + Math.floor((Math.random() * 1000) + 1));
 
             const usuarioRetorno = await usuarioModel.findById(dadosPedidoRequisicao.usuario);
-            const usuarioSemSenha = {...usuarioRetorno["_doc"], senha: undefined}
+            const usuarioSemSenha = { ...usuarioRetorno["_doc"], senha: undefined }
 
             const retornoSorvetes = await Promise.all(dadosSorvetesBrutos.map(async (e) => {
                 if (e['tipo'] == "sorvete-padrao") {
@@ -63,14 +66,14 @@ class PedidosController {
 
             const resultadoPedidoFinal = await pedidosModel.create(pedidoFinal);
 
-            res.status(201).json({message: "Pedido cadastrado com sucesso!", data: resultadoPedidoFinal});
+            res.status(201).json({ message: "Pedido cadastrado com sucesso!", data: resultadoPedidoFinal });
         } catch (error) {
             next(error);
         }
     }
 
-    
-    static async atualizaPedido(req, res, next){
+
+    static async atualizaPedido(req, res, next) {
         try {
             const idPedido = req.params.id;
             const dadosRequisicao = req.body;
@@ -79,8 +82,8 @@ class PedidosController {
 
             if (retornoAtualizacao !== null) {
                 const pedidoAtualizado = await pedidosModel.findById(idPedido);
-                res.status(200).json({message: "Pedido atualizado!", data: pedidoAtualizado});
-            }else{
+                res.status(200).json({ message: "Pedido atualizado!", data: pedidoAtualizado });
+            } else {
                 next(new NotFoundError("Id do pedido não encontrado!"));
             }
         } catch (error) {
@@ -88,19 +91,58 @@ class PedidosController {
         }
     }
 
-    
-    static async deletaPedido(req, res, next){
+
+    static async deletaPedido(req, res, next) {
         try {
             const idPedido = req.params.id;
 
             const retornoDelecao = await pedidosModel.findByIdAndDelete(idPedido);
 
             if (retornoDelecao !== null) {
-                res.status(200).json({message: "Pedido deletado!"});
+                res.status(200).json({ message: "Pedido deletado!" });
             } else {
-                next(new NotFoundError("Id do pedido não encontrado!"));                
+                next(new NotFoundError("Id do pedido não encontrado!"));
             }
 
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /* EXEMPLOS 
+        Apenas uma busca:
+        http://localhost:3000/pedidos/busca?emailUsuario=vitoriaaguilar209@gmail.com
+
+        Duas buscas juntas:
+        http://localhost:3000/pedidos/busca?status=A confirmar&codigo=9867373
+    */ 
+    static async buscaPorURL(req, res, next) {
+        try {
+            const { status, codigo, emailUsuario } = req.query;
+
+            let busca = {};
+
+            if (status) busca.status = status;
+            if (codigo) busca.codigo = codigo;
+            if (emailUsuario) {
+                const usuario = await usuarioModel.findOne({ email: emailUsuario });
+
+                if (usuario !== null) {
+                    const usuarioID = usuario._id;
+
+                    busca["usuario._id"] = usuarioID;
+                } else {
+                    busca = null;
+                }
+            }
+
+            if (busca !== null) {
+                const pedidoResultadoBusca = await pedidosModel.find(busca);
+
+                res.status(200).json(pedidoResultadoBusca);
+            } else {
+                res.status(200).json([]);
+            }
         } catch (error) {
             next(error);
         }
