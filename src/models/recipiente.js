@@ -6,6 +6,7 @@ const recipienteSchema = new Schema({
     nome: String,
     tipo: String,
     quantidade: Number,
+    preco: Number,
     imagem: String,
 });
 
