@@ -1,6 +1,15 @@
 import mongoose from 'mongoose';
 import saborSorveteModel  from '../models/sabor-sorvete.js';
 import fs from "fs";
+import { GridFSBucket } from "mongodb";
+const conn = mongoose.connection;
+let gfs;
+
+conn.once('open', () => {
+    gfs = new GridFSBucket(conn.db, {
+        bucketName: 'sabor-sorvete',
+    });
+});
 
 class saborSorveteController{
 
@@ -22,17 +31,26 @@ class saborSorveteController{
     static async cadastraSaborSorvete(req, res) {
         try {
             
-            const { nome, sabor, quantidade, imagem  } = req.body
+            const { nome, sabor, quantidade, preco, imagem  } = req.body
             const file = req.file
             
-            if( !nome || !sabor || !quantidade || !file){
+            if( !nome || !sabor || !quantidade || !preco || !file){
                 res.status(400).send({message: "Preencha todos os dados!"})
             } else {
                 
-                const dadosSaborSorvete = {...req.body, imagem: file.path}
+                const dadosSaborSorvete = {...req.body, imagem: file.filename}
                 const saborCadastrado = await saborSorveteModel.create(dadosSaborSorvete);
 
-                res.status(201).json({message: "O sabor foi cadastrado com sucesso!", data: saborCadastrado})
+                const saborResposta = {
+                    id: saborCadastrado._id,
+                    nome: saborCadastrado.nome,
+                    sabor: saborCadastrado.sabor,
+                    quantidade: saborCadastrado.quantidade,
+                    preco: saborCadastrado.preco,
+                    imagem: `/sabor-sorvete/image/${saborCadastrado.imagem}`,
+                }
+
+                res.status(201).json({message: "O sabor foi cadastrado com sucesso!", data: saborResposta})
 
             }
 
@@ -45,7 +63,7 @@ class saborSorveteController{
     static async atualizaSaborSorvete(req, res) {
         try {
 
-            const { nome, sabor, quantidade, imagem } = req.body
+            const { nome, sabor, quantidade, preco, imagem } = req.body
             const file = req.file
             const id = req.params.id
 
@@ -53,7 +71,7 @@ class saborSorveteController{
                 res.status(400).send({message: "Id inválido"})
             } else {
                 
-                if( !nome && !sabor && !quantidade && !file  ){
+                if( !nome && !sabor && !quantidade && !preco && !file  ){
                     res.status(400).send({message: "Preencha um campo para a atualização!"})
                 } else {
                     
@@ -64,14 +82,17 @@ class saborSorveteController{
                     } else {
 
                         if(file){
-                            if(fs.existsSync(saborExistente.imagem)){
-                                fs.unlinkSync(saborExistente.imagem);
+                            
+                            const oldFile = await gfs.find({filename: saborExistente.imagem}).toArray();
+
+                            if(oldFile && oldFile.length !== 0){
+                                gfs.delete(oldFile[0]._id);
                             }
-                            saborExistente.imagem = file.path;
+                            saborExistente.imagem = file.filename;
                         }
 
                         await saborExistente.updateOne({
-                            nome, sabor, quantidade, imagem,
+                            nome, sabor, quantidade, preco, imagem,
                             imagem: saborExistente.imagem
                         });
                         res.status(201).json({message: "O sabor foi atualizado com sucesso!", data: saborExistente});
@@ -103,8 +124,10 @@ class saborSorveteController{
                     res.status(404).send({message: "Sabor não encontrado"})
                 }else{
 
-                    if(fs.existsSync(resSabor.imagem)){
-                        fs.unlinkSync(resSabor.imagem)
+                    const oldFile = await gfs.find({filename: resSabor.imagem}).toArray();
+                    
+                    if(oldFile && oldFile.length !== 0){
+                        gfs.delete(oldFile[0]._id)
                     }
 
                     await saborSorveteModel.findByIdAndDelete(id)
@@ -117,6 +140,23 @@ class saborSorveteController{
         } catch(error) {
             console.log(error)
             res.status(500).send({ message: "Ocorreu um erro ao deletar o sabor" });
+        }
+    }
+
+    static async buscaImagem(req, res){
+        try{
+            const filename = req.params.filename;
+            const file = await gfs.find({filename}).toArray();
+
+            if(!file || file.length === 0) {
+                return res.status(404).json({message: 'Arquivo não encontrado'})
+            }
+
+            const readStream = gfs.openDownloadStreamByName(filename)
+            readStream.pipe(res)
+        } catch(error){
+            console.log(error)
+            res.status(500).send({ message: "Ocorreu um erro ao buscar o arquivo" });   
         }
     }
 
