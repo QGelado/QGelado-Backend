@@ -4,7 +4,7 @@ import fs from "fs";
 
 class acompanhamentoController{
 
-    static async buscaAcompanhamento(req, res) {
+    static async buscaAcompanhamentos(req, res) {
         try{
             const resAcompanhamentos = await acompanhamentoModel.find();
             if(resAcompanhamentos.length === 0){

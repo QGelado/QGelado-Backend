@@ -13,7 +13,7 @@ conn.once('open', () => {
 
 class recipienteController{
 
-    static async buscaRecipientes(req, res) {
+    static async buscaTodosRecipientes(req, res) {
         try{
             const recipientes = await recipienteModel.find();
             if(recipientes.length === 0){

@@ -4,7 +4,7 @@ import upload from "../config/multer.js"
 
 const routesAcompanhamento = express.Router()
 
-routesAcompanhamento.get("/acompanhamento", acompanhamentoController.buscaAcompanhamento)
+routesAcompanhamento.get("/acompanhamento", acompanhamentoController.buscaAcompanhamentos)
 routesAcompanhamento.get("/acompanhamento/:id", acompanhamentoController.buscaAcompanhamento)
 routesAcompanhamento.post("/acompanhamento", upload('acompanhamento').single('file'), acompanhamentoController.cadastraAcompanhamento)
 routesAcompanhamento.put("/acompanhamento/:id", upload('acompanhamento').single('file'), acompanhamentoController.atualizaAcompanhamento)
