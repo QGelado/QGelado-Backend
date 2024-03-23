@@ -8,11 +8,12 @@ import routesSorvetePadraoAuth from "./routesSorvetePadraoAuth.js";
 import routerUsuario from "./routesUsuario.js";
 import routerUsuarioAuth from "./routesUsuarioAuth.js";
 import routesPedidosAuth from "./routesPedidosAuth.js";
+import routesAcompanhamento from "./routesAcompanhamento.js";
 
 const routes = app => {
     // Tudo que vem depois da routerUsuarioAuth precisa de token
     app.use(express.json(), 
-    routerUsuario, routesSorvetePersonalizado, routesSorvetePadrao, routerAdmin,
+    routerUsuario, routesSorvetePersonalizado, routesSorvetePadrao, routerAdmin, routesAcompanhamento,
     routerUsuarioAuth, routesSorvetePersonalizadoAuth, routesSorvetePadraoAuth,routesAdminAuth, routesPedidosAuth);
 }
 
