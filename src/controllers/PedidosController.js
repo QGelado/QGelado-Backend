@@ -118,7 +118,7 @@ class PedidosController {
     */ 
     static async buscaPorURL(req, res, next) {
         try {
-            const { status, codigo, emailUsuario } = req.query;
+            const { status, codigo, emailUsuario, idUsuario } = req.query;
 
             let busca = {};
 
@@ -126,6 +126,17 @@ class PedidosController {
             if (codigo) busca.codigo = codigo;
             if (emailUsuario) {
                 const usuario = await usuarioModel.findOne({ email: emailUsuario });
+
+                if (usuario !== null) {
+                    const usuarioID = usuario._id;
+
+                    busca["usuario._id"] = usuarioID;
+                } else {
+                    busca = null;
+                }
+            }
+            if (idUsuario) {
+                const usuario = await usuarioModel.findOne({ _id: idUsuario });
 
                 if (usuario !== null) {
                     const usuarioID = usuario._id;
