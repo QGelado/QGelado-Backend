@@ -19,7 +19,17 @@ class recipienteController{
             if(recipientes.length === 0){
                 res.status(404).send({message: "Recipiente não disponivel"})
             }else{
-                res.status(200).json(recipientes)
+                const resRecipientes = recipientes.map((recipiente) => {
+                    return {
+                        _id: recipiente._id,
+                        nome: recipiente.nome,
+                        sabor: recipiente.sabor,
+                        quantidade: recipiente.quantidade,
+                        preco: recipiente.preco,
+                        imagem: `/recipiente/image/${recipiente.imagem}`,
+                    }
+                })
+                res.status(200).json(resRecipientes)
             }
         }catch(erro){
             console.error(erro)
@@ -42,7 +52,15 @@ class recipienteController{
                 if(!resRecipiente){
                     res.status(404).send({message: "Recipiente não encontrado"})
                 }else{
-                    res.status(200).json(resRecipiente)
+                    const recipiente = {
+                        _id: resRecipiente._id,
+                        nome: resRecipiente.nome,
+                        sabor: resRecipiente.sabor,
+                        quantidade: resRecipiente.quantidade,
+                        preco: resRecipiente.preco,
+                        imagem: `/recipiente/image/${resRecipiente.imagem}`,
+                    }
+                    res.status(200).json(recipiente)
                 }
 
             }
@@ -68,7 +86,7 @@ class recipienteController{
                 const recipienteCadastrado = await recipienteModel.create(dadosRecipiente);
 
                 const recipienteResposta = {
-                    id: recipienteCadastrado._id,
+                    _id: recipienteCadastrado._id,
                     nome: recipienteCadastrado.nome,
                     sabor: recipienteCadastrado.sabor,
                     quantidade: recipienteCadastrado.quantidade,
@@ -119,7 +137,7 @@ class recipienteController{
                         }
 
                         await recipienteExistente.updateOne({
-                            nome, tipo, quantidade, preco, imagem,
+                            nome, tipo, quantidade, preco,
                             imagem: recipienteExistente.imagem
                         });
                         res.status(201).json({message: "O recipiente foi atualizado com sucesso!", data: recipienteExistente});

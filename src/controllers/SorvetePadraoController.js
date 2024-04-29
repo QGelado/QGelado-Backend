@@ -22,7 +22,7 @@ class SorvetePadraoController {
             }else{
                 const sorvetes = resSorvetes.map(sorvete => {
                     return {
-                        id: sorvete._id,
+                        _id: sorvete._id,
                         marca: sorvete.marca,
                         quantidade: sorvete.quantidade,
                         status: sorvete.status,
@@ -57,7 +57,7 @@ class SorvetePadraoController {
                     res.status(404).send({message: "Sorvete não encontrado"})
                 }else{
                     const sorvete = {
-                        id: resSorvete._id,
+                        _id: resSorvete._id,
                         marca: resSorvete.marca,
                         quantidade: resSorvete.quantidade,
                         status: resSorvete.status,
@@ -92,7 +92,7 @@ class SorvetePadraoController {
                 const sorveteCadastrado = await sorvetePadraoModel.create(dadosSorvete);
     
                 const sorveteResposta = {
-                    id: sorveteCadastrado._id,
+                    _id: sorveteCadastrado._id,
                     marca: sorveteCadastrado.marca,
                     quantidade: sorveteCadastrado.quantidade,
                     status: sorveteCadastrado.status,
@@ -150,7 +150,7 @@ class SorvetePadraoController {
                             imagem: sorveteExistente.imagem
                         });
                         const sorveteResposta = {
-                            id: sorveteExistente._id,
+                            _id: sorveteExistente._id,
                             marca: sorveteExistente.marca,
                             quantidade: sorveteExistente.quantidade,
                             status: sorveteExistente.status,

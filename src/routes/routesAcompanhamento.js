@@ -6,8 +6,7 @@ const routesAcompanhamento = express.Router()
 
 routesAcompanhamento.get("/acompanhamento", acompanhamentoController.buscaAcompanhamentos)
 routesAcompanhamento.get("/acompanhamento/:id", acompanhamentoController.buscaAcompanhamento)
-routesAcompanhamento.post("/acompanhamento", upload('acompanhamento').single('file'), acompanhamentoController.cadastraAcompanhamento)
-routesAcompanhamento.put("/acompanhamento/:id", upload('acompanhamento').single('file'), acompanhamentoController.atualizaAcompanhamento)
-routesAcompanhamento.delete("/acompanhamento/:id", acompanhamentoController.deletaAcompanhamento)
+routesAcompanhamento.get("/acompanhamento/image/:filename", acompanhamentoController.buscaImagem)
+
 
 export default routesAcompanhamento;

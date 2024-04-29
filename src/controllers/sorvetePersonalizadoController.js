@@ -25,7 +25,7 @@ class sorvetePersonalizadoController{
             }else{
                 const sorvetes = sorvetesPersonalizados.map(sorvete => {
                     return {
-                        id: sorvete._id,
+                        _id: sorvete._id,
                         sabores: sorvete.sabores,
                         acompanhamentos: sorvete.acompanhamentos,
                         nome: sorvete.nome,
@@ -59,7 +59,7 @@ class sorvetePersonalizadoController{
                     res.status(404).send({message: "Sorvete não encontrado"})
                 }else{
                     const sorvete = {
-                        id: sorvetePersonalizado._id,
+                        _id: sorvetePersonalizado._id,
                         sabores: sorvetePersonalizado.sabores,
                         acompanhamentos: sorvetePersonalizado.acompanhamentos,
                         nome: sorvetePersonalizado.nome,
@@ -92,7 +92,7 @@ class sorvetePersonalizadoController{
                 const sorveteCadastrado = await sorvetePersonalizadoModel.create(dadosSorvete)
 
                 const sorveteResposta = {
-                    id: sorveteCadastrado._id,
+                    _id: sorveteCadastrado._id,
                     sabores: sorveteCadastrado.sabores,
                     acompanhamentos: sorveteCadastrado.acompanhamentos,
                     nome: sorveteCadastrado.nome,
@@ -148,7 +148,7 @@ class sorvetePersonalizadoController{
                         });
 
                         const sorveteResposta = {
-                            id: sorveteExistente._id,
+                            _id: sorveteExistente._id,
                             sabores: sorveteExistente.sabores,
                             acompanhamentos: sorveteExistente.acompanhamentos,
                             nome: sorveteExistente.nome,

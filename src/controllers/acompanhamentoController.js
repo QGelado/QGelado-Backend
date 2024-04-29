@@ -1,6 +1,15 @@
 import mongoose from 'mongoose';
 import acompanhamentoModel  from '../models/acompanhamento.js';
 import fs from "fs";
+import { GridFSBucket } from "mongodb";
+const conn = mongoose.connection;
+let gfs;
+
+conn.once('open', () => {
+    gfs = new GridFSBucket(conn.db, {
+        bucketName: 'acompanhamento',
+    });
+});
 
 class acompanhamentoController{
 
@@ -10,7 +19,14 @@ class acompanhamentoController{
             if(resAcompanhamentos.length === 0){
                 res.status(404).send({message: "Acompanhamento não disponivel"})
             }else{
-                res.status(200).json(resAcompanhamentos)
+                const acompanhamentos = resAcompanhamentos.map((resAcompanhamento) => { return {
+                    _id: resAcompanhamento._id,
+                    nome: resAcompanhamento.nome,
+                    tipo: resAcompanhamento.tipo,
+                    quantidade: resAcompanhamento.quantidade,
+                    imagem: `/acompanhamento/image/${resAcompanhamento.imagem}`,
+                }})
+                res.status(200).json(acompanhamentos)
             }
         }catch(erro){
             console.error(erro)
@@ -34,7 +50,14 @@ class acompanhamentoController{
                 if(!resAcompanhamento){
                     res.status(404).send({message: "Acompanhamento não encontrado"})
                 }else{
-                    res.status(200).json(resAcompanhamento)
+                    const acompanhamento = {
+                        _id: resAcompanhamento._id,
+                        nome: resAcompanhamento.nome,
+                        tipo: resAcompanhamento.tipo,
+                        quantidade: resAcompanhamento.quantidade,
+                        imagem: `/acompanhamento/image/${resAcompanhamento.imagem}`,
+                    }
+                    res.status(200).json(acompanhamento)
                 }
 
             }
@@ -92,14 +115,16 @@ class acompanhamentoController{
                     } else {
 
                         if(file){
-                            if(fs.existsSync(acompanhamentoExistente.imagem)){
-                                fs.unlinkSync(acompanhamentoExistente.imagem);
+                            const oldFile = await gfs.find({filename: acompanhamentoExistente.imagem}).toArray();
+                            
+                            if(oldFile && oldFile.length !== 0){
+                                gfs.delete(oldFile[0]._id);
                             }
-                            acompanhamentoExistente.imagem = file.path;
+                            acompanhamentoExistente.imagem = file.filename;
                         }
 
                         await acompanhamentoExistente.updateOne({
-                            nome, tipo, quantidade, imagem,
+                            nome, tipo, quantidade, 
                             imagem: acompanhamentoExistente.imagem
                         });
                         res.status(201).json({message: "O acompanhamento foi atualizado com sucesso!", data: acompanhamentoExistente});
@@ -132,8 +157,10 @@ class acompanhamentoController{
                     res.status(404).send({message: "Acompanhamento não encontrado"})
                 }else{
 
-                    if(fs.existsSync(resAcompanhamento.imagem)){
-                        fs.unlinkSync(resAcompanhamento.imagem)
+                    const oldFile = await gfs.find({filename: resAcompanhamento.imagem}).toArray();
+                            
+                    if(oldFile && oldFile.length !== 0){
+                        gfs.delete(oldFile[0]._id);
                     }
 
                     await acompanhamentoModel.findByIdAndDelete(id)
@@ -146,6 +173,23 @@ class acompanhamentoController{
         } catch(error) {
             console.log(error)
             res.status(500).send({ message: "Ocorreu um erro ao deletar o acompanhamento" });
+        }
+    }
+
+    static async buscaImagem(req, res){
+        try{
+            const filename = req.params.filename;
+            const file = await gfs.find({filename}).toArray();
+
+            if(!file || file.length === 0) {
+                return res.status(404).json({message: 'Arquivo não encontrado'})
+            }
+
+            const readStream = gfs.openDownloadStreamByName(filename)
+            readStream.pipe(res)
+        } catch(error){
+            console.log(error)
+            res.status(500).send({ message: "Ocorreu um erro ao buscar o arquivo" });   
         }
     }
 

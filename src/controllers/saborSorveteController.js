@@ -13,13 +13,51 @@ conn.once('open', () => {
 
 class saborSorveteController{
 
-    static async buscaSabor(req, res) {
+    static async buscaSabores(req, res) {
         try{
             const saborSorvetes = await saborSorveteModel.find();
             if(saborSorvetes.length === 0){
                 res.status(404).send({message: "Sabor não disponivel"})
             }else{
-                res.status(200).json(saborSorvetes)
+                const sabores = saborSorvetes.map((saborSorvete) => { 
+                    return {
+                    _id: saborSorvete._id,
+                    nome: saborSorvete.nome,
+                    sabor: saborSorvete.sabor,
+                    quantidade: saborSorvete.quantidade,
+                    preco: saborSorvete.preco,
+                    imagem: `/sabor-sorvete/image/${saborSorvete.imagem}`,
+                }})
+                res.status(200).json(sabores)
+            }
+        }catch(erro){
+            console.error(erro)
+            res.status(500).json({message:"Ocorreu um erro ao buscar o sabor"})
+        }
+
+    }
+
+    static async buscaSabor(req, res) {
+        try{
+            const { id } = req.params
+
+            if(!mongoose.Types.ObjectId.isValid(id)){
+                res.status(400).send({message: "Id inválido"})
+            } else {
+                const saborSorvete = await saborSorveteModel.findById(id);
+                if(!saborSorvete){
+                    res.status(404).send({message: "Sabor não disponivel"})
+                }else{
+                    const sabor = {
+                        _id: saborSorvete._id,
+                        nome: saborSorvete.nome,
+                        sabor: saborSorvete.sabor,
+                        quantidade: saborSorvete.quantidade,
+                        preco: saborSorvete.preco,
+                        imagem: `/sabor-sorvete/image/${saborSorvete.imagem}`,
+                    }
+                    res.status(200).json(sabor)
+                }
             }
         }catch(erro){
             console.error(erro)
@@ -42,7 +80,7 @@ class saborSorveteController{
                 const saborCadastrado = await saborSorveteModel.create(dadosSaborSorvete);
 
                 const saborResposta = {
-                    id: saborCadastrado._id,
+                    _id: saborCadastrado._id,
                     nome: saborCadastrado.nome,
                     sabor: saborCadastrado.sabor,
                     quantidade: saborCadastrado.quantidade,
@@ -92,7 +130,7 @@ class saborSorveteController{
                         }
 
                         await saborExistente.updateOne({
-                            nome, sabor, quantidade, preco, imagem,
+                            nome, sabor, quantidade, preco,
                             imagem: saborExistente.imagem
                         });
                         res.status(201).json({message: "O sabor foi atualizado com sucesso!", data: saborExistente});
