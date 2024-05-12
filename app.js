@@ -18,9 +18,9 @@ connection.once("open", () => {
 
 const app = express();
 
-routes(app);
+app.use(cors());
 
-app.use(cors())
+routes(app);
 
 const port = 3000;
 
