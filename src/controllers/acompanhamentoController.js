@@ -22,6 +22,7 @@ class acompanhamentoController{
                 const acompanhamentos = resAcompanhamentos.map((resAcompanhamento) => { return {
                     _id: resAcompanhamento._id,
                     nome: resAcompanhamento.nome,
+                    preco: resAcompanhamento.preco,
                     tipo: resAcompanhamento.tipo,
                     quantidade: resAcompanhamento.quantidade,
                     imagem: `/acompanhamento/image/${resAcompanhamento.imagem}`,
@@ -54,6 +55,7 @@ class acompanhamentoController{
                         _id: resAcompanhamento._id,
                         nome: resAcompanhamento.nome,
                         tipo: resAcompanhamento.tipo,
+                        preco: resAcompanhamento.preco,
                         quantidade: resAcompanhamento.quantidade,
                         imagem: `/acompanhamento/image/${resAcompanhamento.imagem}`,
                     }
@@ -72,10 +74,10 @@ class acompanhamentoController{
     static async cadastraAcompanhamento(req, res) {
         try {
             
-            const { nome, tipo, quantidade, imagem  } = req.body
+            const { nome, tipo, quantidade, preco, imagem  } = req.body
             const file = req.file
             
-            if( !nome || !tipo || !quantidade || !file){
+            if( !nome || !tipo || !quantidade || !preco || !file){
                 res.status(400).send({message: "Preencha todos os dados!"})
             } else {
                 
@@ -96,7 +98,7 @@ class acompanhamentoController{
     static async atualizaAcompanhamento(req, res) {
         try {
 
-            const { nome, tipo, quantidade, imagem } = req.body
+            const { nome, tipo, quantidade, preco, imagem } = req.body
             const file = req.file
             const id = req.params.id
 
@@ -124,7 +126,7 @@ class acompanhamentoController{
                         }
 
                         await acompanhamentoExistente.updateOne({
-                            nome, tipo, quantidade, 
+                            nome, tipo, quantidade, preco,
                             imagem: acompanhamentoExistente.imagem
                         });
                         res.status(201).json({message: "O acompanhamento foi atualizado com sucesso!", data: acompanhamentoExistente});

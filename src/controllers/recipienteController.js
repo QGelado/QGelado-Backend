@@ -23,7 +23,7 @@ class recipienteController{
                     return {
                         _id: recipiente._id,
                         nome: recipiente.nome,
-                        sabor: recipiente.sabor,
+                        tipo: recipiente.tipo,
                         quantidade: recipiente.quantidade,
                         preco: recipiente.preco,
                         imagem: `/recipiente/image/${recipiente.imagem}`,
@@ -55,7 +55,7 @@ class recipienteController{
                     const recipiente = {
                         _id: resRecipiente._id,
                         nome: resRecipiente.nome,
-                        sabor: resRecipiente.sabor,
+                        tipo: resRecipiente.tipo,
                         quantidade: resRecipiente.quantidade,
                         preco: resRecipiente.preco,
                         imagem: `/recipiente/image/${resRecipiente.imagem}`,
@@ -88,7 +88,7 @@ class recipienteController{
                 const recipienteResposta = {
                     _id: recipienteCadastrado._id,
                     nome: recipienteCadastrado.nome,
-                    sabor: recipienteCadastrado.sabor,
+                    tipo: recipienteCadastrado.tipo,
                     quantidade: recipienteCadastrado.quantidade,
                     preco: recipienteCadastrado.preco,
                     imagem: `/recipiente/image/${recipienteCadastrado.imagem}`,

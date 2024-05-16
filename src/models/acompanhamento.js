@@ -5,6 +5,7 @@ const { Schema } = mongoose;
 const acompanhamentoSchema = new Schema({
     nome: String,
     tipo: String,
+    preco: Number,
     quantidade: String,
     imagem: String,
 });
