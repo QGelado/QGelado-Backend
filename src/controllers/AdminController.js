@@ -101,7 +101,7 @@ class AdminController{
                 }else{
                     const token = sign({_id: temAdmin._id, email: temAdmin.email}, process.env.JWT_SECRET, {expiresIn: 86400});
 
-                    res.status(200).json({message: "Admin autenticado com sucesso!", token: token});
+                    res.status(200).json({message: "Admin autenticado com sucesso!", temAdmin, token: token});
                 }
             }
 
