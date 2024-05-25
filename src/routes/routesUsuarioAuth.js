@@ -8,6 +8,7 @@ const routerUsuario = express.Router();
 routerUsuario.use(validaToken);
 
 routerUsuario.get("/usuario", UsuarioController.buscaTodosOsUsuario);
+routerUsuario.get("/usuario/quantidadeCadastrados", UsuarioController.buscaQuantidadeDeUsuariosCadastrados);
 routerUsuario.get("/usuario/:id", UsuarioController.buscaUmUsuarioPorId);
 routerUsuario.put("/usuario/:id", UsuarioController.atualizarUsuario);
 routerUsuario.delete("/usuario/:id", UsuarioController.deletaUsuario);
