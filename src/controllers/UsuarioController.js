@@ -26,6 +26,16 @@ class UsuarioController {
         }
     }
 
+    static async buscaQuantidadeDeUsuariosCadastrados(req, res, next) {
+        try {
+            const resultadoBusca = await usuarioModel.find({});
+
+            res.status(200).json(resultadoBusca.length);
+        } catch (error) {
+            next(error);
+        }
+    }
+
 
     static async buscaUmUsuarioPorId(req, res, next) {
         try {
