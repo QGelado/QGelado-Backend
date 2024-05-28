@@ -1,4 +1,5 @@
 import pkgJson from 'jsonwebtoken';
+
 const { verify, decode } = pkgJson;
 import Unauthorized from "../erros/Unauthorized.js";
 
@@ -11,14 +12,12 @@ export default async function validaToken(req, res, next) {
     }
 
     const [, tokenRequisicao] = token.split(" ");
-
     try {
         verify(tokenRequisicao, process.env.JWT_SECRET);
+        const { id, email } = await decode(tokenRequisicao);
 
-        const { _id , email} = await decode(tokenRequisicao);
-
-        req.usuarioId = _id;
-        req.usuarioEmail = email;
+        req.query.usuarioId = id;
+        req.query.usuarioEmail = email;
 
         return next();
     } catch (error) {

@@ -5,12 +5,15 @@ import { usuarioModel } from "../models/index.js";
 import pkg from 'bcryptjs';
 const { hash, compare } = pkg;
 import pkgJson from 'jsonwebtoken';
-const { sign } = pkgJson;
+import pkgMongo from 'mongodb';
+const { ObjectID } = pkgMongo;
+const { sign, verify, decode } = pkgJson;
 
 class UsuarioController {
 
     static async buscaTodosOsUsuario(req, res, next) {
         try {
+    
             const resultadoBusca = await usuarioModel.find({});
             const resultadoBuscasSemSenhas = resultadoBusca.map(e => { 
                 const objetoAtual = e["_doc"];
@@ -43,12 +46,29 @@ class UsuarioController {
         }
     }
 
+    static async buscaUmUsuarioPorToken(req, res, next) {
+        try {
+            const { usuarioEmail, usuarioId }  = req.query
+       
+            const resultadoBusca = await usuarioModel.findById(usuarioId);
+
+            if (resultadoBusca !== null) {
+                console.log(resultadoBusca)
+                res.status(200).json(resultadoBusca);
+            } else {
+                next(new NotFoundError("ID do usuário não encontrado"));
+            }
+        } catch (error) {
+            next(error);
+        }
+    }
+
 
     static async criaUmNovoUsuario(req, res, next) {
         try {
             let dadosRequisicao = req.body;
             const emailRequisicao = dadosRequisicao.email
-
+            console.log(emailRequisicao)
             const usuarioExiste = await usuarioModel.find({email: emailRequisicao});
 
             if (usuarioExiste.length === 0) {
@@ -107,21 +127,26 @@ class UsuarioController {
     static async login(req, res, next){
         try {
             const {email, senha} = req.body;
+            const senhaHash = await hash(senha, 8);
             
             const usuarioExiste = await usuarioModel.find({email: email});
 
             if (usuarioExiste.length === 0) {
                 next(new NotFoundError("Usuário não encontrado"));
             }else{
-                const comparacaoDeSenhas = await compare(senha, usuarioExiste[0]['senha']);
-                
+                const comparacaoDeSenhas = await compare(senha, senhaHash);
                 if(!comparacaoDeSenhas){
                     next(new Unauthorized());
                 }else{
 
                     // Token tudo 1 dia
-                    const token = sign({_id: usuarioExiste._id, email: usuarioExiste.email}, process.env.JWT_SECRET, {expiresIn: 86400});
 
+                    const token = sign({id: usuarioExiste[0]._id, email: usuarioExiste[0].email}, process.env.JWT_SECRET, {expiresIn: 86400});
+                    console.log(token);
+                    console.log(process.env.JWT_SECRET);
+                    var decoded = verify(token, process.env.JWT_SECRET);
+                    console.log(decode(token))
+                    console.log(decoded)
                     res.status(200).json({message: "Usuário autenticado com sucesso!", usuarioExiste, token: token});
                 }
             }

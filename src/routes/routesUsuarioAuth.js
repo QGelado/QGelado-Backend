@@ -11,5 +11,6 @@ routerUsuario.get("/usuario", UsuarioController.buscaTodosOsUsuario);
 routerUsuario.get("/usuario/:id", UsuarioController.buscaUmUsuarioPorId);
 routerUsuario.put("/usuario/:id", UsuarioController.atualizarUsuario);
 routerUsuario.delete("/usuario/:id", UsuarioController.deletaUsuario);
+routerUsuario.get("/me", UsuarioController.buscaUmUsuarioPorToken);
 
 export default routerUsuario;
