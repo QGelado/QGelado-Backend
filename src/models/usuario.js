@@ -24,7 +24,8 @@ const usuarioSchema = new mongoose.Schema({
             },
             message: "O telefone precisa ter 11 números!"
         }
-    }
+    },
+    tokenNotifications: { type: mongoose.Schema.Types.String }
 }, { versionKey: false });
 
 const usuarioModel = mongoose.model("usuarios", usuarioSchema);
