@@ -13,11 +13,11 @@ class UsuarioController {
 
     static async buscaTodosOsUsuario(req, res, next) {
         try {
-    
+
             const resultadoBusca = await usuarioModel.find({});
-            const resultadoBuscasSemSenhas = resultadoBusca.map(e => { 
+            const resultadoBuscasSemSenhas = resultadoBusca.map(e => {
                 const objetoAtual = e["_doc"];
-                return {...objetoAtual, senha: undefined}
+                return { ...objetoAtual, senha: undefined }
             });
 
             res.status(200).json(resultadoBuscasSemSenhas);
@@ -45,7 +45,7 @@ class UsuarioController {
             if (resultadoBusca !== null) {
 
                 // Excluir a senha das respostas
-                const resultadoBuscaSemSenha = {...resultadoBusca["_doc"], senha: undefined}
+                const resultadoBuscaSemSenha = { ...resultadoBusca["_doc"], senha: undefined }
 
                 res.status(200).json(resultadoBuscaSemSenha);
             } else {
@@ -58,8 +58,8 @@ class UsuarioController {
 
     static async buscaUmUsuarioPorToken(req, res, next) {
         try {
-            const { usuarioEmail, usuarioId }  = req.query
-       
+            const { usuarioEmail, usuarioId } = req.query
+
             const resultadoBusca = await usuarioModel.findById(usuarioId);
 
             if (resultadoBusca !== null) {
@@ -78,19 +78,18 @@ class UsuarioController {
         try {
             let dadosRequisicao = req.body;
             const emailRequisicao = dadosRequisicao.email
-            console.log(emailRequisicao)
-            const usuarioExiste = await usuarioModel.find({email: emailRequisicao});
+            const usuarioExiste = await usuarioModel.find({ email: emailRequisicao });
 
             if (usuarioExiste.length === 0) {
 
                 const senhaHash = await hash(dadosRequisicao.senha, 8);
-                dadosRequisicao = {...dadosRequisicao, senha: senhaHash}
+                dadosRequisicao = { ...dadosRequisicao, senha: senhaHash }
 
-                const token = sign({_id: usuarioExiste._id, email: usuarioExiste.email}, process.env.JWT_SECRET, {expiresIn: 86400});
+                const token = sign({ _id: usuarioExiste._id, email: usuarioExiste.email }, process.env.JWT_SECRET, { expiresIn: 86400 });
 
                 const resultadoCriacao = await usuarioModel.create(dadosRequisicao);
                 res.status(201).json({ message: "Usuário Cadastrado com sucesso!", token: token, data: resultadoCriacao });
-            }else{
+            } else {
                 next(new AlreadyExist());
             }
 
@@ -134,33 +133,39 @@ class UsuarioController {
         }
     }
 
-    static async login(req, res, next){
+    static async login(req, res, next) {
         try {
-            const {email, senha} = req.body;
+            const { email, senha, tokenNotification } = req.body;
             const senhaHash = await hash(senha, 8);
-            
-            const usuarioExiste = await usuarioModel.find({email: email});
+
+            const usuarioExiste = await usuarioModel.find({ email: email });
 
             if (usuarioExiste.length === 0) {
                 next(new NotFoundError("Usuário não encontrado"));
-            }else{
+            } else {
                 const comparacaoDeSenhas = await compare(senha, senhaHash);
-                if(!comparacaoDeSenhas){
+                if (!comparacaoDeSenhas) {
                     next(new Unauthorized());
-                }else{
+                } else {
 
-                    // Token tudo 1 dia
-
-                    const token = sign({id: usuarioExiste[0]._id, email: usuarioExiste[0].email}, process.env.JWT_SECRET, {expiresIn: 86400});
-                    console.log(token);
-                    console.log(process.env.JWT_SECRET);
+                    // Token dura 1 dia
+                    const token = sign({ id: usuarioExiste[0]._id, email: usuarioExiste[0].email }, process.env.JWT_SECRET, { expiresIn: 86400 });
                     var decoded = verify(token, process.env.JWT_SECRET);
-                    console.log(decode(token))
-                    console.log(decoded)
-                    res.status(200).json({message: "Usuário autenticado com sucesso!", usuarioExiste, token: token});
+
+                    // Atualiza token se tiver passado
+                    if (tokenNotification) {
+                        const idParaAtualizaToken = usuarioExiste[0]._id.toString()
+                        const usuarioAtualizadoComTokenNotification = { ...usuarioExiste[0]["_doc"], tokenNotifications: tokenNotification }
+                        await usuarioModel.findByIdAndUpdate(idParaAtualizaToken, usuarioAtualizadoComTokenNotification);
+                        const resultadoAtualizacao = await usuarioModel.findById(idParaAtualizaToken);
+                        res.status(200).json({ message: "Usuário autenticado com sucesso!", resultadoAtualizacao, token: token });
+                        return;
+                    }
+
+                    res.status(200).json({ message: "Usuário autenticado com sucesso!", usuarioExiste, token: token });
                 }
             }
-        
+
         } catch (error) {
             next(error)
         }
