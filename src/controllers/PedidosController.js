@@ -3,6 +3,7 @@ import sorvetePadraoModel from "../models/sorvetePadrao.js";
 import { usuarioModel } from "../models/usuario.js";
 import sorvetePersonalizadoModel from "../models/sorvetePersonalizado.js";
 import NotFoundError from "../erros/NotFoundError.js";
+import { Expo } from 'expo-server-sdk';
 
 class PedidosController {
 
@@ -72,7 +73,6 @@ class PedidosController {
         }
     }
 
-
     static async atualizaPedido(req, res, next) {
         try {
             const idPedido = req.params.id;
@@ -82,6 +82,28 @@ class PedidosController {
 
             if (retornoAtualizacao !== null) {
                 const pedidoAtualizado = await pedidosModel.findById(idPedido);
+                const usuarioIdToken = pedidoAtualizado.usuario._id;
+
+                if (pedidoAtualizado.status == "Finalizado") {
+                    const usuario = await usuarioModel.findOne({ _id: usuarioIdToken });
+                    const tokenNotification = usuario.tokenNotifications;
+
+                    if (tokenNotification != undefined) {
+                        let expo = new Expo();
+
+                        const messages = [{
+                            to: tokenNotification,
+                            sound: 'default',
+                            body: "Seu pedido está pronto!",
+                            data: { withSome: "Pedido finalizado!" },
+                        }];
+
+                        const ticketChunk = await expo.sendPushNotificationsAsync(messages)
+                        res.status(200).json({ message: "Pedido atualizado e Cliente notificado!", data: pedidoAtualizado });
+                        return
+                    }
+                }
+
                 res.status(200).json({ message: "Pedido atualizado!", data: pedidoAtualizado });
             } else {
                 next(new NotFoundError("Id do pedido não encontrado!"));
@@ -190,11 +212,11 @@ class PedidosController {
         try {
             const retornoBusca = await pedidosModel.aggregate([
                 { $unwind: "$sorvetes" },
-                { 
-                  $group: {
-                    _id: "Valor total dos sorvetes",
-                    totalValor: { $sum: { $toDecimal: "$sorvetes.preco" } } 
-                  }
+                {
+                    $group: {
+                        _id: "Valor total dos sorvetes",
+                        totalValor: { $sum: { $toDecimal: "$sorvetes.preco" } }
+                    }
                 }
             ]);
 
@@ -215,7 +237,7 @@ class PedidosController {
                 {
                     $group: {
                         _id: "$usuario._id",
-                        nome: { $first: "$usuario.nome" }, 
+                        nome: { $first: "$usuario.nome" },
                         count: { $sum: 1 }
                     }
                 },
@@ -238,12 +260,12 @@ class PedidosController {
     static async buscaValorTotalDosPedidos(req, res, next) {
         try {
             const retornoBusca = await pedidosModel.aggregate([
-                { 
+                {
                     $group: {
-                      _id: "Valor total dos pedidos", 
-                      totalValor: { $sum: { $toDecimal: "$preco" } } 
+                        _id: "Valor total dos pedidos",
+                        totalValor: { $sum: { $toDecimal: "$preco" } }
                     }
-                  }
+                }
             ]);
 
             if (retornoBusca !== null) {
@@ -262,16 +284,16 @@ class PedidosController {
             const retornoBusca = await pedidosModel.aggregate([
                 {
                     $group: {
-                      _id: {
-                        month: { $month: "$data" },
-                        year: { $year: "$data" }
-                      },
-                      totalValor: { $sum: { $toDecimal: "$preco" } } 
+                        _id: {
+                            month: { $month: "$data" },
+                            year: { $year: "$data" }
+                        },
+                        totalValor: { $sum: { $toDecimal: "$preco" } }
                     }
-                  },
-                  {
+                },
+                {
                     $sort: { "_id.year": 1, "_id.month": 1 }
-                  }
+                }
             ]);
 
             if (retornoBusca !== null) {
