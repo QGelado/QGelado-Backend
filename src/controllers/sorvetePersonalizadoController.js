@@ -84,11 +84,7 @@ class sorvetePersonalizadoController{
 
             const file = req.file
 
-            if(!file){
-                res.status(400).send({message: "A imagem é obrigatória para cadastrar um sorvete"})
-            } else {
-
-                const dadosSorvete = {...req.body, imagem: file.filename}
+                const dadosSorvete = {...req.body, imagem: file?.filename}
                 const sorveteCadastrado = await sorvetePersonalizadoModel.create(dadosSorvete)
 
                 const sorveteResposta = {
@@ -104,7 +100,6 @@ class sorvetePersonalizadoController{
 
                 res.status(201).json({message: "Sorvete personalizado foi cadastrado com sucesso!", data: sorveteResposta})
 
-            }
 
         } catch(error) {
             console.log(error)

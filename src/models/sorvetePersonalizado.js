@@ -6,7 +6,7 @@ const sorvetePersonalizadoSchema = new mongoose.Schema({
     sabores: { type: Array, required: [true, "Os sabores são obrigatórios para cadastrar um sorvete personalizado"] },
     recipiente: { type: Object, required: [true, "O recipienet é obrigatório para cadastrar um sorvete personalizado"] },
     acompanhamentos: { type: Array, required: false },
-    imagem: { type: String, required: [true, "A imagem é obrigatória para cadastrar um sorvete personalizado"] },
+    imagem: { type: String, required: false },
     descricao: { type: String, required: [true, "A descrição é obrigatória para cadastrar um sorvete personalizado"] },
 })
 
