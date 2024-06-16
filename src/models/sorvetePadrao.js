@@ -6,7 +6,7 @@ const sorvetePadraoSchema = new mongoose.Schema({
     preco: { type: Number, required: [true, "O preço é obrigatório para cadastrar um sorvete"] },
     sabor: { type: String, required: [true, "O sabor é obrigatório para cadastrar um sorvete"] },
     quantidade: { type: Number, required: [true, "A quantidade é obrigatória para cadastrar um sorvete"] },
-    status: { type: String, required: [true, "O status é obrigatório para cadastrar um sorvete"] },
+    status: { type: String, required: false },
     descricao: { type: String, required: [true, "A descrição é obrigatória para cadastrar um sorvete"] },
     imagem: { type: String, required: [true, "A imagem é obrigatória para cadastrar um sorvete"] },
 })
